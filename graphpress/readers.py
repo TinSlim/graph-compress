@@ -40,3 +40,15 @@ class Reader_NTgz(AbstractReader):
         with gzip.open(self.filename,'r') as f:
             for line in f:
                 yield line.decode().rstrip()
+
+class Reader_CGgz(AbstractReader):
+    """Reads a compressed graph (.gz file) line by line."""
+
+    def check_file_extension(self) -> None:
+        if not self.filename.endswith('.gz'):
+            raise ValueError('File extension not supported.')
+
+    def readline(self) -> str:
+        with gzip.open(self.filename,'r') as f:
+            for line in f:
+                yield line.decode().rstrip()
