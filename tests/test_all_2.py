@@ -1,6 +1,8 @@
 from graphcompress.readers import Reader_NT, Reader_NTgz, Reader_CGgz
-from graphcompress.parsers import WikidataParser, CGParser
+from graphcompress.parsers import WikidataParser, CGParser, IGParser
 from graphcompress.builders import Builder
+from graphcompress.builders_2 import Builder2
+
 import os
 import unittest
 
@@ -42,7 +44,19 @@ class GraphcompressTest(unittest.TestCase):
         rc = Reader_CGgz(self.output_file)
         pc = CGParser()
         print(pc.parse_line(next(rc.readline())))
-        self.assertEqual(pc.parse_line(next(rc.readline())), (1, [[132, 2, 3]]))     
+        self.assertEqual(pc.parse_line(next(rc.readline())), (1, [[132, 2, 3]]))
+
+    def test_indexed_format(self):
+        r = Reader_NT(self.test_file)
+        p = WikidataParser()
+        b = Builder2(r,p,self.partitions_dir,self.output_file)
+        b.make_partitions()
+        b.merge_partitions()
+
+        pc = IGParser()
+        rc = Reader_CGgz(self.output_file)
+
+        self.assertEqual(pc.parse_line(next(rc.readline())), (1, [0,1])) 
 
 
 
