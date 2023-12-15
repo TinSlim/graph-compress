@@ -20,16 +20,11 @@ def mergeDictionary(dict_1, dict_2):
 def format_line (line):
     """
     Converts from correct format [num, {}] to line for .gz file
-    line    [0, {0: [2,3,4], 1: [5]}]
-    ret     "0 0.2.3.4 1.5\n".encode()
+    line    [0, 1, 2, 3]
+    ret     "0 1 2 3\n".encode()
     """
-    id_line_local = line[0]
-    answer = [str(id_line_local)]
-    for edge in line[1].keys():
-        nums_string = list(map (lambda x: str(x), line[1][edge]))
-        nums_join = '.'.join([str(edge)] + nums_string)
-        answer.append(nums_join)
-    last = ' '.join(answer) + '\n'
+    line = list(map(lambda x: str(x), line))
+    last = ' '.join(line) + '\n'
     return last.encode()
 
 def line_convert (line):
