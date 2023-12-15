@@ -44,7 +44,7 @@ def structToText(key, value):
 	"""
 	return [key] + value
 
-class Builder2():
+class IGBuilder():
 
     def __init__(self, reader, parser, partition_folder, output_file, max_lines_readed_per_file=10000):
         self.reader = reader

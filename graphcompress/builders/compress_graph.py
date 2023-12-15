@@ -59,7 +59,7 @@ def structToText(key, value):
 	groups = list(map(lambda x: '.'.join( list(map(lambda y: str(y),x)) ),value))
 	return [key] + groups
 
-class Builder():
+class CGBuilder():
 
     def __init__(self, reader, parser, partition_folder, output_file, max_lines_readed_per_file=10000):
         self.reader = reader
