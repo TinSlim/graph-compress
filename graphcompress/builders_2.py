@@ -38,7 +38,7 @@ def line_convert (line):
     line    "0 1 2 3"
     ret     [0, 1, 2, 3]
     """
-    return list(map(int, line.split(' ')))
+    return list(map(int, line.split())) if line else []
 
 def structToText(key, value):
 	"""
