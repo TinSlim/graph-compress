@@ -22,3 +22,14 @@ class CGParser():
         line_split = line.split(" ")
         subj = int(line_split[0])
         return (subj,[[int(y) for y in x.split(".")] for x in line_split[1:]])
+    
+class IGParser():
+    def parse_line(self, line):
+        """
+        Parses a line fom an IG file
+        line       '1 2 3 4'
+        ret        (1, [2,3,4])
+        """
+        line_split = line.split(" ")
+        subj = int(line_split[0])
+        return (subj,[int(x) for x in line_split[1:]])

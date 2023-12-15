@@ -20,46 +20,31 @@ def mergeDictionary(dict_1, dict_2):
 def format_line (line):
     """
     Converts from correct format [num, {}] to line for .gz file
-    line    [0, {0: [2,3,4], 1: [5]}]
-    ret     "0 0.2.3.4 1.5\n".encode()
+    line    [0, 1, 2, 3]
+    ret     "0 1 2 3\n".encode()
     """
-    id_line_local = line[0]
-    answer = [str(id_line_local)]
-    for edge in line[1].keys():
-        nums_string = list(map (lambda x: str(x), line[1][edge]))
-        nums_join = '.'.join([str(edge)] + nums_string)
-        answer.append(nums_join)
-    last = ' '.join(answer) + '\n'
+    line = list(map(lambda x: str(x), line))
+    last = ' '.join(line) + '\n'
     return last.encode()
 
 def line_convert (line):
     """
     Converts a text line to correct format [num, {}]
-    line    "0 0.2.3.4 1.5"
-    ret     [0, {0: [2,3,4], 1: [5]}]
+    line    "0 1 2 3"
+    ret     [0, 1, 2, 3]
     """
-    line_to = []
-    if line != '':
-        line_to = line.split(' ')
-        id_line = int(line_to[0])
-        rs = {}
-        for val in line_to[1:]:
-            val_split = list(map(lambda x: int(x),val.split('.')))
-            rs[val_split[0]] = val_split[1:]
-        line_to = [id_line,rs]
-    return line_to
+    return list(map(int, line.split())) if line else []
 
 def structToText(key, value):
 	"""
 	Converts a structure {1 : [2,3]} to a list that will be written after
 	key		1
 	value	[2,3]
-	ret		[1, '2.3']
+	ret		[1, 2, 3]
 	"""
-	groups = list(map(lambda x: '.'.join( list(map(lambda y: str(y),x)) ),value))
-	return [key] + groups
+	return [key] + value
 
-class Builder():
+class IGBuilder():
 
     def __init__(self, reader, parser, partition_folder, output_file, max_lines_readed_per_file=10000):
         self.reader = reader
@@ -78,33 +63,15 @@ class Builder():
         for line in self.reader.readline():
             subj, pred, obj = self.parser.parse_line(line)
             if subj in rel:
-                done = False
-
-                for relation in rel[subj]:
-                    if relation[0] == pred:
-                        relation.append(obj)
-                        done = True
-                        break
-                if not done:
-                    rel[subj].append([pred,obj])
+                rel[subj].append(line_counter)
             else:
-                rel[subj] = [[pred,obj]]
+                rel[subj] = [line_counter]
 
             # If node obj is in rel
             if obj in rel:
-                done = False
-
-                for relation in rel[obj]:
-                    if relation[0] == pred * -1:
-                        relation.append(subj)
-                        done = True
-                        break
-
-                if not done:
-                    rel[obj].append([pred * -1,subj])
-
+                rel[obj].append(line_counter)
             else:
-                rel[obj] = [[pred * -1,subj]]
+                rel[obj] = [line_counter]
 
             act_readed_lines += 1
             line_counter += 1
@@ -178,6 +145,10 @@ class Builder():
                 # Write file
                 line_write = format_line(act_line)
                 comp_file.write(line_write)
+                # Close files
+                comp_file.close()
+                for file in files:
+                    file.close()
                 #new_node += 1
                 
                 # Ends
@@ -212,11 +183,11 @@ class Builder():
                 
                 # Get values
                 line_id = lines[index][0]
-                line_con = lines[index][1]
+                line_con = lines[index][1:]
 
                 # If same id, merge
                 if line_id == last_id:
-                    act_line[1] = mergeDictionary(line_con, act_line[1])
+                    act_line = act_line + line_con
                     line_to = files[index].readline().replace('\n','')
                     lines[index] = line_convert(line_to)
                     write_line = False
