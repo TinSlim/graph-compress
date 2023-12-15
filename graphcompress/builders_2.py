@@ -150,6 +150,10 @@ class Builder():
                 # Write file
                 line_write = format_line(act_line)
                 comp_file.write(line_write)
+                # Close files
+                comp_file.close()
+                for file in files:
+                    file.close()
                 #new_node += 1
                 
                 # Ends
