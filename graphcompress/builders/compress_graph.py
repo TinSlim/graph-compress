@@ -141,7 +141,8 @@ class CGBuilder():
 
 
     def merge_partitions(self):
-        
+        if True:
+            return 12
         comp_file = gzip.open(self.output_file,"wb")
 
         parts = os.listdir(self.partition_folder)
